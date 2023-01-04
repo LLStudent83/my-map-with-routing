@@ -3,11 +3,10 @@ import React, { useEffect, useRef } from "react";
 import L, { Icon } from "leaflet";
 import { useLeafletContext } from "@react-leaflet/core";
 import "leaflet-routing-machine";
-import { useAppDispatch } from "../../../../hooks/redux";
-import {
-  setDistanceInRouteCreator,
-  routeIsBuildingCreator,
-} from "../../../../redux/Map/MapSearchReducer/actions/map";
+// import {
+//   setDistanceInRouteCreator,
+//   routeIsBuildingCreator,
+// } from "../../../../redux/Map/MapSearchReducer/actions/map";
 
 const NewControl = L.Routing.Control.extend({
   _onZoomEnd() {
@@ -51,41 +50,40 @@ const createRoutineMachineLayer = (props, context) => {
   const {
     constructionCoord,
     projectCoord,
-    dataIconsForMap,
-    color,
-    routeId,
+    // dataIconsForMap,
+    // color,
+    // routeId,
     vehicle,
   } = props;
-  const dispatch = useAppDispatch();
 
   const routingControl = new NewControl({
     waypoints: [L.latLng(constructionCoord), L.latLng(projectCoord)],
 
-    createMarker: (i, start, n) => {
-      if (!dataIconsForMap) {
-        return null;
-      }
-      let marker_icon = null;
-      if (i === 0) {
-        // This is the first marker, indicating start
-        marker_icon = dataIconsForMap[1];
-      } else if (i === n - 1) {
-        // This is the last marker indicating destination
-        marker_icon = dataIconsForMap[0];
-      }
-      const marker = L.marker(start.latLng, {
-        rotationAngle: marker_icon.rotationAngle,
-        rotationOrigin: "center",
-        draggable: true,
-        bounceOnAdd: false,
-        bounceOnAddOptions: {
-          duration: 1000,
-          height: 800,
-        },
-        icon: marker_icon.icon,
-      });
-      return marker;
-    },
+    // createMarker: (i, start, n) => {
+    //   if (!dataIconsForMap) {
+    //     return null;
+    //   }
+    //   let marker_icon = null;
+    //   if (i === 0) {
+    //     // This is the first marker, indicating start
+    //     marker_icon = dataIconsForMap[1];
+    //   } else if (i === n - 1) {
+    //     // This is the last marker indicating destination
+    //     marker_icon = dataIconsForMap[0];
+    //   }
+    //   const marker = L.marker(start.latLng, {
+    //     // rotationAngle: marker_icon.rotationAngle,
+    //     // rotationOrigin: "center",
+    //     draggable: true,
+    //     // bounceOnAdd: false,
+    //     // bounceOnAddOptions: {
+    //     //   duration: 1000,
+    //     //   height: 800,
+    //     // },
+    //     // icon: marker_icon.icon,
+    //   });
+    //   return marker;
+    // },
 
     router: new L.Routing.OSRMv1({
       serviceUrl:
@@ -96,7 +94,7 @@ const createRoutineMachineLayer = (props, context) => {
 
     lineOptions: {
       styles: [
-        { color: `${color}`, opacity: 1, weight: 8 },
+        { color: "red", opacity: 1, weight: 8 },
         { color: "white", opacity: 0.3, weight: 6 },
       ],
       addWaypoints: false, // разрешает добавлять путевые точки к маршруту
@@ -113,25 +111,25 @@ const createRoutineMachineLayer = (props, context) => {
     draggableWaypoints: true,
   });
 
-  routingControl.on("routingstart", () => {
-    context.map.getZoom() < 15 && dispatch(routeIsBuildingCreator(true)); // устраняет БАГ с вечным Loader
-  });
+  //   routingControl.on("routingstart", () => {
+  //     context.map.getZoom() < 15 && dispatch(routeIsBuildingCreator(true)); // устраняет БАГ с вечным Loader
+  //   });
 
-  routingControl.on("routesfound", (e) => {
-    dispatch(routeIsBuildingCreator(false));
+  //   routingControl.on("routesfound", (e) => {
+  //     dispatch(routeIsBuildingCreator(false));
 
-    if (vehicle) {
-      const { routes } = e;
-      const { summary } = routes[0];
-      const distance = summary.totalDistance.toFixed();
-      dispatch(setDistanceInRouteCreator({ distance, routeId }));
-    }
-  });
+  //     if (vehicle) {
+  //       const { routes } = e;
+  //       const { summary } = routes[0];
+  //       const distance = summary.totalDistance.toFixed();
+  //       dispatch(setDistanceInRouteCreator({ distance, routeId }));
+  //     }
+  //   });
 
-  routingControl.on("routingerror", (e) => {
-    dispatch(routeIsBuildingCreator(false));
-    new Error("При построении маршрута произошла ошибка", e);
-  });
+  //   routingControl.on("routingerror", (e) => {
+  //     dispatch(routeIsBuildingCreator(false));
+  //     new Error("При построении маршрута произошла ошибка", e);
+  //   });
   //---------------------------------------------------------------
   // Этот блок для тестов MapLayout
   const waypointsElement = Array.from(
