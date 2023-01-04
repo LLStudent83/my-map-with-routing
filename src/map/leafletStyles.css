@@ -1,0 +1,15 @@
+.leaflet-container {
+  height: 800px;
+}
+
+.changeVehicleButton {
+  cursor: pointer;
+}
+
+.active rect {
+  fill: #21c7f4;
+}
+
+.active path {
+  fill: white;
+}

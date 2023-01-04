@@ -1,0 +1,32 @@
+.changeVehicleContainer {
+  position: absolute;
+  z-index: 1000;
+  left: 60px;
+  top: 12px;
+}
+
+.changeVehicleButton {
+  cursor: pointer;
+}
+
+.active rect {
+  fill: #21c7f4;
+}
+
+.active path {
+  fill: white;
+}
+
+.swapPointIcon {
+  cursor: pointer;
+  height: 34px;
+  width: 54px;
+  position: absolute;
+  z-index: 1000;
+  left: 185px;
+  top: 12px;
+}
+
+.swapPointIcon rect:active {
+  fill: #21c7f4;
+}
