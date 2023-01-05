@@ -1,89 +1,18 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useEffect, useRef } from "react";
-import L, { Icon } from "leaflet";
+import { useEffect, useRef } from "react";
+import L from "leaflet";
 import { useLeafletContext } from "@react-leaflet/core";
 import "leaflet-routing-machine";
-// import {
-//   setDistanceInRouteCreator,
-//   routeIsBuildingCreator,
-// } from "../../../../redux/Map/MapSearchReducer/actions/map";
-
-const NewControl = L.Routing.Control.extend({
-  _onZoomEnd() {
-    if (!this._selectedRoute || !this._router.requiresMoreDetail) {
-      return;
-    }
-
-    const map = this._map;
-    if (
-      this._router.requiresMoreDetail(
-        this._selectedRoute,
-        map.getZoom(),
-        map.getBounds()
-      )
-    ) {
-      this.route({
-        callback: L.bind((err, routes) => {
-          let i;
-          if (!err) {
-            for (i = 0; i < routes.length; i++) {
-              this._routes[i].properties = routes[i].properties;
-            }
-            this._updateLineCallback(err, routes);
-            // В родной метод была добавлена эта строчка во избежание вечного Loadera
-            // возникает когда одна из путевых точек в процессе zoomе на MapSearch уходит за пределы карты
-
-            this.fire("routesfound", {
-              waypoints: routes[0].waypoints,
-              routes,
-            });
-          }
-        }, this),
-        simplifyGeometry: false,
-        geometryOnly: false,
-      });
-    }
-  },
-});
 
 const createRoutineMachineLayer = (props, context) => {
-  const {
-    startPointCoord,
-    endPointCoord,
-    // dataIconsForMap,
-    // color,
-    // routeId,
-    vehicle,
-  } = props;
+  const { startPointCoord, endPointCoord, vehicle } = props;
 
-  const routingControl = new NewControl({
+  const routingControl = L.Routing.control({
     waypoints: [L.latLng(startPointCoord), L.latLng(endPointCoord)],
 
     createMarker: (i, start, n) => {
-      // if (!dataIconsForMap) {
       return null;
     },
-    //   let marker_icon = null;
-    //   if (i === 0) {
-    //     // This is the first marker, indicating start
-    //     marker_icon = dataIconsForMap[1];
-    //   } else if (i === n - 1) {
-    //     // This is the last marker indicating destination
-    //     marker_icon = dataIconsForMap[0];
-    //   }
-    //   const marker = L.marker(start.latLng, {
-    //     // rotationAngle: marker_icon.rotationAngle,
-    //     // rotationOrigin: "center",
-    //     draggable: true,
-    //     // bounceOnAdd: false,
-    //     // bounceOnAddOptions: {
-    //     //   duration: 1000,
-    //     //   height: 800,
-    //     // },
-    //     // icon: marker_icon.icon,
-    //   });
-    //   return marker;
-    // },
 
     router: new L.Routing.OSRMv1({
       serviceUrl:
@@ -111,42 +40,10 @@ const createRoutineMachineLayer = (props, context) => {
     draggableWaypoints: true,
   });
 
-  //   routingControl.on("routingstart", () => {
-  //     context.map.getZoom() < 15 && dispatch(routeIsBuildingCreator(true)); // устраняет БАГ с вечным Loader
-  //   });
-
-  //   routingControl.on("routesfound", (e) => {
-  //     dispatch(routeIsBuildingCreator(false));
-
-  //     if (vehicle) {
-  //       const { routes } = e;
-  //       const { summary } = routes[0];
-  //       const distance = summary.totalDistance.toFixed();
-  //       dispatch(setDistanceInRouteCreator({ distance, routeId }));
-  //     }
-  //   });
-
-  //   routingControl.on("routingerror", (e) => {
-  //     dispatch(routeIsBuildingCreator(false));
-  //     new Error("При построении маршрута произошла ошибка", e);
-  //   });
-  //---------------------------------------------------------------
-  // Этот блок для тестов MapLayout
-  const waypointsElement = Array.from(
-    document.querySelectorAll(".leaflet-marker-icon")
-  );
-  for (const i of waypointsElement) {
-    i.setAttribute("data-testid", "mapPoint");
-  }
-  //---------------------------------------------------------------
   return routingControl;
 };
 
 function updateRoutineMachineLayer(instance, props, prevProps) {
-  // if (!props.routeId) {
-  //   // предотвращает зацикливание при dispatch при построении маршрутов не из MapSearch
-  //   return;
-  // }
   if (props.startPointCoord !== prevProps.startPointCoord) {
     instance.setWaypoints([
       L.latLng(props.startPointCoord),

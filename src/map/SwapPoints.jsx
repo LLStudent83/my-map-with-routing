@@ -6,7 +6,6 @@ export default function SwapPoint({ dispatch, state }) {
   const { wayPoints } = state;
 
   const hendleSwapPoint = () => {
-    // const { wayPoints } = state;
     if (wayPoints.length < 2) {
       return;
     }
