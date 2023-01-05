@@ -48,8 +48,8 @@ const NewControl = L.Routing.Control.extend({
 
 const createRoutineMachineLayer = (props, context) => {
   const {
-    constructionCoord,
-    projectCoord,
+    startPointCoord,
+    endPointCoord,
     // dataIconsForMap,
     // color,
     // routeId,
@@ -57,12 +57,12 @@ const createRoutineMachineLayer = (props, context) => {
   } = props;
 
   const routingControl = new NewControl({
-    waypoints: [L.latLng(constructionCoord), L.latLng(projectCoord)],
+    waypoints: [L.latLng(startPointCoord), L.latLng(endPointCoord)],
 
-    // createMarker: (i, start, n) => {
-    //   if (!dataIconsForMap) {
-    //     return null;
-    //   }
+    createMarker: (i, start, n) => {
+      // if (!dataIconsForMap) {
+      return null;
+    },
     //   let marker_icon = null;
     //   if (i === 0) {
     //     // This is the first marker, indicating start
@@ -87,7 +87,7 @@ const createRoutineMachineLayer = (props, context) => {
 
     router: new L.Routing.OSRMv1({
       serviceUrl:
-        vehicle === "foot"
+        vehicle === "walk"
           ? "https://routing.openstreetmap.de/routed-foot/route/v1"
           : "https://router.project-osrm.org/route/v1",
     }),
@@ -143,20 +143,20 @@ const createRoutineMachineLayer = (props, context) => {
 };
 
 function updateRoutineMachineLayer(instance, props, prevProps) {
-  if (!props.routeId) {
-    // предотвращает зацикливание при dispatch при построении маршрутов не из MapSearch
-    return;
-  }
-  if (props.constructionCoord !== prevProps.constructionCoord) {
+  // if (!props.routeId) {
+  //   // предотвращает зацикливание при dispatch при построении маршрутов не из MapSearch
+  //   return;
+  // }
+  if (props.startPointCoord !== prevProps.startPointCoord) {
     instance.setWaypoints([
-      L.latLng(props.constructionCoord),
-      L.latLng(props.projectCoord),
+      L.latLng(props.startPointCoord),
+      L.latLng(props.endPointCoord),
     ]);
   }
   if (props.vehicle !== prevProps.vehicle) {
     const router = instance.getRouter();
     router.options.serviceUrl =
-      props.vehicle === "foot"
+      props.vehicle === "walk"
         ? "https://routing.openstreetmap.de/routed-foot/route/v1"
         : "https://router.project-osrm.org/route/v1";
     instance.route();

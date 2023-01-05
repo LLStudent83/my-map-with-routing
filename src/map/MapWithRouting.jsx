@@ -52,6 +52,13 @@ function MapWithRouting() {
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <ChangeVehicle dispatch={dispatch} state={state} />
       <SwapPoints dispatch={dispatch} state={state} />
+      {state.wayPoints.length === 2 && (
+        <RoutingMashine
+          startPointCoord={state.wayPoints[0]}
+          endPointCoord={state.wayPoints[1]}
+          vehicle={state.vehicle}
+        />
+      )}
     </MapContainer>
   );
 }
